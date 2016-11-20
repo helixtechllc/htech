@@ -1,4 +1,8 @@
 1. Install some tools, that will be needed later
+# RHEL6.x
+[root@ip-172-31-21-76 ~]# rpm -ivh https://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+
+# Needed Tools
 [root@samal-dimdung2 ~]# yum install wget zip unzip git ansible -y
 
 2. Download the Java from from oracle and scp to server
