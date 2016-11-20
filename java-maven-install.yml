@@ -1,5 +1,5 @@
 1. Install some tools, that will be needed later
-[root@samal-dimdung2 ~]# yum install wget zip unzip -y
+[root@samal-dimdung2 ~]# yum install wget zip unzip git ansible -y
 
 2. Download the Java from from oracle and scp to server
 
