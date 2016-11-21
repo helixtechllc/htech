@@ -31,6 +31,10 @@ gpg2 --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB
 gpg --keyserver hkp://keys.gnupg.net:80 --recv-keys D39DC0E3
  
 curl -sSL https://get.rvm.io | bash -s stable --ruby
+# If you get error for Requires: kernel-headers
+
+yum install kernel-headers --disableexcludes=all
+
 source /usr/local/rvm/scripts/rvm (must rune) oher jenkins server - `source /var/lib/jenkins/.rvm/scripts/rvm`
 rvm install 2.3.0(needed, if not installed)
 rvm use 2.3.0 --default
