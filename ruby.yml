@@ -1,0 +1,164 @@
+1)Jenkins Install
+# wget http://pkg.jenkins.io/redhat-stable/jenkins-1.651.3-1.1.noarch.rpm
+# rpm -ivh jenkins-1.651.3-1.1.noarch.rpm
+
+2)usermod -m -d /var/lib/jenkins jenkins
+usermod -s /bin/bash jenkins
+
+3)Java Install
+C:\Development\CloudFormation\ansible\javajboss\roles\java
+
+3)Maven install
+C:\Development\CloudFormation\ansible\javajboss\roles\maven
+
+4)
+chown -R jenkins:jenkins /var/lib/jenkins/
+
+4a)copy C:\Development\CloudFormation\ansible\javajboss\yum.repos.d files to /etc/yum.repos.d/
+yum install gcc
+yum install git
+
+4b)
+/etc/yum.repos.d/redhat-rhui.repo
+change enabled=0 to 1 , under [rhui-REGION-rhel-server-releases-optional]
+Then do,
+
+5)Ruby Install
+umask 0022
+gpg2 --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+
+# If above does not work, you may try below: Above will work for RHEL6.x without any issue. 
+gpg --keyserver hkp://keys.gnupg.net:80 --recv-keys D39DC0E3
+ 
+curl -sSL https://get.rvm.io | bash -s stable --ruby
+source /usr/local/rvm/scripts/rvm (must rune) oher jenkins server - `source /var/lib/jenkins/.rvm/scripts/rvm`
+rvm install 2.3.0(needed, if not installed)
+rvm use 2.3.0 --default
+[root@ip-10-176-32-230 ~]# rvm --version
+rvm 1.27.0 (latest) by Wayne E. Seguin <wayneeseguin@gmail.com>, Michal Papis <mpapis@gmail.com> [https://rvm.io/]
+[root@ip-10-176-32-230 ~]# ruby --version
+ruby 2.0.0p648 (2015-12-16 revision 53162) [x86_64-linux]
+sudo chown -R jenkins:rvm /var/lib/jenkins/.rvm
+##
+extra steps - gpg2 --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3, rvm get stable --auto-dotfiles
+ruby -v
+gem env
+gem sources
+gem sources --add http://rubygems.org/  (http://stackoverflow.com/questions/9962051/could-not-find-a-valid-gem-in-any-repository-rubygame-and-others)
+gem install erubis
+gem install aws-sdk-core
+gem install aws-sdk-resources
+gem install popen4
+gem install mongo
+usermod -a -G rvm jenkins
+[root@ip-10-176-32-230 ~]# chgrp -R rvm /usr/local/rvm
+[root@ip-10-176-32-230 ~]# chmod -R g+w /usr/local/rvm
+find /usr/local/rvm -type d -exec chmod 2775 {} \;
+/usr/local/rvm -type f -exec chmod ug+rw {} \;
+chown -R jenkins:rvm /usr/local/rvm
+
+another Jenkins - http://10.176.1.26:8080/login sreeni/password http://54.173.246.42:8080/script script console to run your scripts
+
+to set path - https://stackoverflow.com/questions/14637979/how-to-permanently-set-path-on-linux
+
+6)start Jenkins:
+echo 'jenkins      ALL=(ALL)   NOPASSWD: ALL' >> /etc/sudoers
+su - jenkins
+service jenkins start
+
+7)login http://54.173.246.42:8080/manage and configure global security and create admin user
+jenkins/jenkins123
+update jenkins configuration 
+-java path, /opt/jdk1.8.0_05
+-maven path, /opt/apache-maven-3.3.9
+-ruby(rake) path
+/usr/local/rvm #for other jenkins /var/lib/jenkins/.rvm
+ruby-2.3.0
+/usr/local/rvm/rubies/ruby-2.3.0 #other jenkins /var/lib/jenkins/.rvm/rubies/ruby-2.3.0
+global properties:env variables
+-GRADLE_OPTS 
+-Xmx1024m -XX:MaxPermSize=256m
+-MAVEN_OPTS
+-Xmx1024m -XX:MaxPermSize=256m
+-PACKER_HOME
+/opt/packer(install pending)
+http://linoxide.com/linux-how-to/install-packer-creating-identical-machine-images/
+-cp C:\Gadila\Installers\Packer to jenkins server /opt/packer and set perm to 755
+Groovy: Groovy2.4.5 select autoinstall
+8)Install plugins
+-git
+-rake
+-mask-passwords
+-saferestart
+-multiple-scms
+-gradle
+-build-user-vars-plugin
+-job-dsl
+-nested-view
+-envinject
+-uno-choice
+-groovy
+-rvm
+-copyartifact
+-postbuildscript
+
+8a)create credential to connect from Jenkins to Github
+jenkins pvtkey to public key on you github repo
+
+9)Create Initial Job ASAPJob-Master
+cp InitialJenkinsJob.xml /var/lib/jenkins/
+cd /var/lib/jenkins/
+wget http://localhost:8080/jnlpJars/jenkins-cli.jar or it'll be at /opt/jenkins-cli.jar
+sudo chmod 755 /opt/jenkins-cli.jar
+chown jenkins:jenkins InitialJenkinsJob.xml
+chmod 755 InitialJenkinsJob.xml
+su - jenkins
+java -jar jenkins-cli.jar -s http://localhost:8080/ create-job "HelixTech-Master" </var/lib/jenkins/InitialJenkinsJob.xml --username jenkins --password jenkins123
+
+10)Install AWS CLI
+execute a C:\Development\CloudFormation\ansible\javajboss\roles\awscli-install role
+su - jenkins
+aws configure
+/var/lib/jenkins/.aws
+-bash-4.1$ cat credentials
+[asap]
+aws_access_key_id = AKIAJYK3DOQDUNNQVVNA
+aws_secret_access_key = BHmmmcccccccccccccccccc
+gem env
+http://artifactory.helix.gsa.gov/artifactory/api/gems/GS-BSP-Ruby-Gems/ - not reachable from ASAP
+
+11)
+build jar using eclipse maven proj of JenkinsJobs.repo helix-aws-rds-snapshot-0.1.jar
+cp helix-aws-rds-snapshot-0.1.jar /opt/jdk1.8.0_05/jre/lib/ext/
+java -cp ./helix-aws-rds-snapshot-0.1.jar gov.gsa.helix.InstanceInfo "asap" "us-east-1" "821351742197"
+restart jenkins service.
+
+12)
+cd /opt/packer
+wget https://releases.hashicorp.com/packer/0.8.6/packer_0.8.6_linux_amd64.zip
+unzip packer_0.8.6_linux_amd64.zip -d /opt/packer/
+#make packar available for all users
+chmod 755 * 
+cp -r /opt/packer/* /usr/bin/
+vi example.json
+{
+  "variables": {
+    "aws_access_key": "",
+    "aws_secret_key": ""
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}",
+    "region": "us-east-1",
+    "source_ami": "ami-fce3c696",
+    "instance_type": "t2.micro",
+    "ssh_username": "ec2-user",
+    "ami_name": "packer-example {{timestamp}}"
+  }]
+}
+su - jenkins
+echo 'export PATH="/opt/packer:$PATH"' >> /var/lib/jenkins/.bashrc, do for .bash_profile too
+source ~/.bashrc
+echo $PATH
+packer validate example.json
