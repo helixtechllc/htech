@@ -1,0 +1,183 @@
+# Preparing for Jenkins Self-Service and AMI Building. 
+# Install some tools/packages which will be needed for 
+[root@samal-dimdung2 ~]# yum install epel-release -y 
+[root@samal-dimdung2 ~]# yum install wget zip unzip git ansible kernel-headers --disableexcludes=all -y
+---------------------------------------------------------------------------------------------
+# Install Java ( Download the Java from Oracle) put in the /tmp
+---------------------------------------------------------------------------------------------
+[root@samal-dimdung2 ~]# ll /tmp/jdk-8u111-linux-x64.gz
+-rw-rw-r--. 1 user user 181442359 Nov 19 02:53 /tmp/jdk-8u111-linux-x64.gz
+[root@samal-dimdung2 ~]# cd /opt/;tar -zxvf /tmp/jdk-8u111-linux-x64.gz
+[root@samal-dimdung2 opt]# ll jdk1.8.0_111
+drwxr-xr-x. 8   10  143 4096 Sep 22 19:27 jdk1.8.0_111
+[root@samal-dimdung2 opt]# mv jdk1.8.0_111 jdk8
+[root@samal-dimdung2 opt]# cd jdk8/
+[root@samal-dimdung2 jdk8]# alternatives --install /usr/bin/java java /opt/jdk8/bin/java 2
+[root@samal-dimdung2 jdk8]# alternatives --config java
+
+There is 1 program that provides 'java'.
+
+  Selection    Command
+-----------------------------------------------
+*+ 1           /opt/jdk8/bin/java
+
+Enter to keep the current selection[+], or type selection number:
+[root@samal-dimdung2 jdk8]#
+
+[root@samal-dimdung2 jdk8]# java -version
+java version "1.8.0_111"
+Java(TM) SE Runtime Environment (build 1.8.0_111-b14)
+Java HotSpot(TM) 64-Bit Server VM (build 25.111-b14, mixed mode)
+[root@samal-dimdung2 jdk8]#
+
+---------------------------------------------------------------------------------------------
+# Install Maven and set the JAVA and Maven Home
+---------------------------------------------------------------------------------------------
+[root@samal-dimdung2 jdk8]# cd /tmp/
+[root@samal-dimdung2 tmp]# wget http://apache.spinellicreations.com/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.zip
+[root@samal-dimdung2 tmp]#
+[root@samal-dimdung2 tmp]# pwd
+/tmp
+[root@samal-dimdung2 tmp]# ls -l apache-maven-3.3.9-bin.zip
+-rw-r--r--. 1 root root 8617253 Nov 18  2015 apache-maven-3.3.9-bin.zip
+[root@samal-dimdung2 tmp]# cd /opt/
+[root@samal-dimdung2 opt]# unzip /tmp/apache-maven-3.3.9-bin.zip
+[root@samal-dimdung2 opt]# ls -ld  apache-maven-3.3.9
+drwxr-xr-x. 6 root root 92 Nov 10  2015 apache-maven-3.3.9
+[root@samal-dimdung2 opt]#
+
+[root@samal-dimdung2 ~]# export JAVA_HOME=/opt/jdk8
+[root@samal-dimdung2 ~]# export PATH=$PATH:$JAVA_HOME/bin/
+[root@samal-dimdung2 ~]# export M2_HOME=/opt/apache-maven-3.3.9
+[root@samal-dimdung2 ~]# export M2=$M2_HOME/bin
+[root@samal-dimdung2 ~]# export PATH=$M2:$PATH
+[root@samal-dimdung2 ~]# mvn -version
+Apache Maven 3.3.9 (bb52d8502b132ec0a5a3f4c09453c07478323dc5; 2015-11-10T11:41:47-05:00)
+Maven home: /opt/apache-maven-3.3.9
+Java version: 1.8.0_111, vendor: Oracle Corporation
+Java home: /opt/jdk8/jre
+Default locale: en_US, platform encoding: UTF-8
+OS name: "linux", version: "3.10.0-327.28.3.el7.x86_64", arch: "amd64", family: "unix"
+[root@samal-dimdung2 ~]#
+---------------------------------------------------------------------------------------------
+# Install Ruby packages 
+---------------------------------------------------------------------------------------------
+vi /etc/yum.repos.d/redhat-rhui.repo
+change enabled=0 to 1 , under [rhui-REGION-rhel-server-releases-optional]
+Then do,
+
+# RHEL6.x
+[root@samal-dimdung2 ~]# umask 0022
+[root@samal-dimdung2 ~]# gpg2 --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+
+# RHEL7.x
+[root@samal-dimdung2 ~]# gpg --keyserver hkp://keys.gnupg.net:80 --recv-keys D39DC0E3
+gpg: directory `/root/.gnupg' created
+gpg: new configuration file `/root/.gnupg/gpg.conf' created
+gpg: WARNING: options in `/root/.gnupg/gpg.conf' are not yet active during this run
+gpg: keyring `/root/.gnupg/secring.gpg' created
+gpg: keyring `/root/.gnupg/pubring.gpg' created
+gpg: requesting key D39DC0E3 from hkp server keys.gnupg.net
+gpg: /root/.gnupg/trustdb.gpg: trustdb created
+gpg: key D39DC0E3: public key "Michal Papis (RVM signing) <mpapis@gmail.com>" imported
+gpg: no ultimately trusted keys found
+gpg: Total number processed: 1
+gpg:               imported: 1  (RSA: 1)
+[root@samal-dimdung2 ~]# curl -sSL https://get.rvm.io | bash -s stable --ruby
+[root@samal-dimdung2 ~]# source /usr/local/rvm/scripts/rvm
+[root@samal-dimdung2 ~]#
+[root@samal-dimdung2 ~]# rvm --version
+rvm 1.27.0 (latest) by Wayne E. Seguin <wayneeseguin@gmail.com>, Michal Papis <mpapis@gmail.com> [https://rvm.io/]
+[root@samal-dimdung2 ~]# ruby --version
+ruby 2.3.0p0 (2015-12-25 revision 53290) [x86_64-linux]
+[root@samal-dimdung2 ~]#
+[root@samal-dimdung2 ~]# rvm use 2.3.0 --default
+Using /usr/local/rvm/gems/ruby-2.3.0
+[root@samal-dimdung2 ~]#
+
+# AWS Packages
+gem install erubis
+gem install aws-sdk-core
+gem install aws-sdk-resources
+gem install popen4
+gem install mongo
+---------------------------------------------------------------------------------------------
+# Install Jenkins:
+---------------------------------------------------------------------------------------------
+# Run the below script to install the Jenkins
+[root@samal-dimdung2 ~]# cat jnk-install
+wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo
+rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key
+yum install jenkins -y
+service jenkins start
+sudo chkconfig jenkins on
+[root@samal-dimdung2 ~]#
+
+# Install below plugins 
+Active Choices Plug-in
+Amazon EC2 plugin
+Artifactory Plugin
+Build Pipeline Plugin
+categorized-view
+Checkmarx Plugin
+Email Ext Recipients Column Plugin
+Email Extension Template Plugin
+Environment Injector Plugin
+GitHub Authentication plugin
+GitHub Pull Request Builder
+GitHub SQS Build Trigger Plugin
+Hudson SCP publisher plugin
+jenkins-cloudformation-plugin
+Job Configuration History Plugin
+Job Import Plugin
+Jobcopy Builder plugin
+Join plugin
+jQuery UI plugin
+Log Parser Plugin
+Mail Map Resolver
+Mask Passwords Plugin
+Nested View Plugin
+Node and Label parameter plugin
+Parameterized Remote Trigger Plugin
+Pipeline: Basic Steps
+Pipeline: Build Step
+Pipeline: Multibranch
+Pipeline: Nodes and Processes
+Pipeline: Stage View Plugin
+Post-Build Script Plug-in
+Pretested Integration Plugin
+Publish Over SSH
+Rake plugin
+Rally Plugin
+Regex Email Plugin
+Release Plugin
+Role-based Authorization Strategy
+Rvm
+S3 package parameter plugin
+S3 publisher plugin
+Safe Restart Plugin
+Show Build Parameters plugin
+SSH plugin
+SSH Slaves plugin
+Template Workflows
+ThinBackup
+Throttle Concurrent Builds Plug-in
+Translation Assistance plugin
+user build vars plugin
+Version Number Plug-In
+View Job Filters
+Workspace Cleanup Plugin
+
+## Optional 
+usermod -aG rvm jenkins
+[root@ip-10-176-32-230 ~]# chgrp -R rvm /usr/local/rvm
+[root@ip-10-176-32-230 ~]# chmod -R g+w /usr/local/rvm
+find /usr/local/rvm -type d -exec chmod 2775 {} \;
+/usr/local/rvm -type f -exec chmod ug+rw {} \;
+chown -R jenkins:rvm /usr/local/rvm
+
+# 
+
+
+
+
