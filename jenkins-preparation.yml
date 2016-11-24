@@ -170,6 +170,7 @@ View Job Filters
 Workspace Cleanup Plugin
 
 ## Optional 
+[root@samal-dimdung2 ~]# usermod -s /bin/bash jenkins
 usermod -aG rvm jenkins
 [root@ip-10-176-32-230 ~]# chgrp -R rvm /usr/local/rvm
 [root@ip-10-176-32-230 ~]# chmod -R g+w /usr/local/rvm
