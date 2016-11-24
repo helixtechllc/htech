@@ -114,6 +114,7 @@ sudo chkconfig jenkins on
 [root@samal-dimdung2 ~]#
 
 # Install below plugins 
+Multiple SCMs plugin
 Active Choices Plug-in
 Amazon EC2 plugin
 Artifactory Plugin
