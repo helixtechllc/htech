@@ -1,0 +1,38 @@
+---
+- name: testing windows modules
+  hosts: windows 
+
+  vars:
+    uPassword: w!ndowS
+
+  tasks:
+  - name: run ipconfig 
+    raw: ipconfig
+    register: ipconfig
+
+  - debug: var=ipconfig
+
+  - name: test stat module on file 
+    win_stat: path="C:/Windows/win.ini"
+    register: stat_file
+ 
+  - debug: var=stat_file
+
+  - name: add a local group
+    win_group: name=TestWindowsGroup description="My Windows Group" state=present
+    register: wingroup
+
+  - debug: var=wingroup
+
+  - name: add a local user 
+    win_user: name=Testuser password={{uPassword}} groups=TestWindowsGroup group_action=add
+    register: winuser
+
+  - debug: var=winuser
+
+  - name: give my local user some permission
+    win_acl:
+      path: "C:\\Users\\Public"
+      user: TestUser
+      rights: FullControl
+      type: allow  
