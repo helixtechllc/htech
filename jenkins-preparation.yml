@@ -63,6 +63,7 @@ OS name: "linux", version: "3.10.0-327.28.3.el7.x86_64", arch: "amd64", family: 
 # Install Ruby packages 
 ---------------------------------------------------------------------------------------------
 vi /etc/yum.repos.d/redhat-rhui.repo
+#RHEL7.x line # 104
 change enabled=0 to 1 , under [rhui-REGION-rhel-server-releases-optional]
 Then do,
 
