@@ -1,0 +1,52 @@
+NOTE: Be sure you are using the same server version and distribution from the course for these topics.
+Download the appropriate Java JDK version from the Oracle website. For this course, we use jdk-8u121.
+Copy the package from your local environment to the target server.
+Install and configure Java (jdk-8u121).
+Install Jenkins (version 2.19.4).
+Complete the Install Wizard.
+
+
+1. Go to: http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
+2. Download the appropriate Java JDK version from the Oracle website. For this course, we use jdk-8u121.
+3. Copy the package from your local environment to the target server.
+    Below is an example using scp:
+    scp jdk-8u121-linux-x64.rpm user@your-server:/home/user/
+4. Install the jdk package.
+    rpm -Uvh jdk-8u121-linux-x64.rpm
+5. Set up alternatives for Java:
+   $ alternatives --install /usr/bin/java java /usr/java/latest/bin/java 200000
+   $ alternatives --install /usr/bin/javac javac /usr/java/latest/bin/javac 200000
+   $ alternatives --install /usr/bin/jar jar /usr/java/latest/bin/jar 200000
+  Note: Check out Terry’s nugget on this for more detail: “Setting Local and Global Java Environment Variables”
+6. Set JAVA_HOME environmental variable in rc.local.
+  vi /etc/rc.local
+  export JAVA_HOME=”/usr/java/latest”
+  Jenkins Install
+
+#Add the Jenkins repo to your yum sources on the CentOS node.
+  wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+Import the Jenkins rpm signing key.
+rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+Install the Jenkins package.
+We will be using version 2.19.4, which is the target version for the certification test.
+yum install -y jenkins-2.19.4-1.1
+Check for services running on 8080 before starting the Jenkins service.
+netstat -tulpn | grep 8080
+If nothing is running on 8080, go ahead and start the service via systemctl.
+systemctl start jenkins
+Also, enable the Jenkins service so it starts on system startup.
+systemctl enable jenkins
+Check again for services running on port 8080.
+There will be a slight delay, so we’ll use watch to wait for the signal.
+watch n=1 "netstat -tulpn | grep 8080"
+Use Ctrl-C to break the watch when the service is shown to be running on 8080.
+Visit the web GUI at:
+http://your-server-fqdn:8080/
+You’ll be prompted for the initialAdminPassword which is located in /var/lib/jenkins/secrets/initialAdminPassword on the system being configured. You’ll want to cat that and copy and paste it into the browser.
+cat /var/lib/jenkins/secrets/initialAdminPassword
+Paste the password into Install Wizard.
+Choose “Install Suggested Plugins.”
+Set admin settings, user, password, etc.
+Press “Enter.”
+Click “Start Using Jenkins.”
+Now you have your Jenkins Master up and running!
