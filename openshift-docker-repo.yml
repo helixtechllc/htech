@@ -1,0 +1,46 @@
+# Dockar images push into OCP registry
+
+Samals-MacBook-Pro:~ dimdung$ docker login -u dimdung -p dVbZi8JGAyoiPFn75vieuHsxu8IJHPkNLCzrlaKGVbw docker-registry-default.34.204.176.243.nip.io
+WARNING! Using --password via the CLI is insecure. Use --password-stdin.
+Login Succeeded
+Samals-MacBook-Pro:~ dimdung$ docker images
+REPOSITORY                                                    TAG                 IMAGE ID            CREATED             SIZE
+768848247133.dkr.ecr.us-east-1.amazonaws.com/golean/daer-db   latest              0f494fbc3c2c        2 years ago         1.71GB
+Samals-MacBook-Pro:~ dimdung$ oc create is golean/daer-db myproject
+error: exactly one argument (name) is supported, not: [golean/daer-db myproject]
+Samals-MacBook-Pro:~ dimdung$ oc create is daer-db myproject
+error: exactly one argument (name) is supported, not: [daer-db myproject]
+Samals-MacBook-Pro:~ dimdung$ oc create is golean/daer-db -n myproject
+The ImageStream "golean/daer-db" is invalid: metadata.name: Invalid value: "golean/daer-db": may not contain '/'
+Samals-MacBook-Pro:~ dimdung$ oc create is daer-db -n myproject
+imagestream "daer-db" created
+Samals-MacBook-Pro:~ dimdung$ docker tag 768848247133.dkr.ecr.us-east-1.amazonaws.com/golean/daer-db docker-registry-default.34.204.176.243.nip.io/myproject/daer-db
+Samals-MacBook-Pro:~ dimdung$ docker push docker-registry-default.34.204.176.243.nip.io/myproject/daer-db
+The push refers to a repository [docker-registry-default.34.204.176.243.nip.io/myproject/daer-db]
+5f70bf18a086: Pushed 
+6ccabe2aa788: Pushed 
+65ad3ec03c84: Pushed 
+acebc9e49ea8: Pushed 
+a252ea2a243c: Pushed 
+a59b5b01ce0b: Pushed 
+5c525f898924: Pushed 
+fe826e4ee035: Pushed 
+5c799604d474: Pushed 
+ac18c29c236d: Pushed 
+c6591a6f4a76: Pushed 
+a09c6481e61e: Pushed 
+36ba9115e473: Pushed 
+28ec024b8e9d: Pushed 
+d4af0481ae83: Pushed 
+d2c581e4a25a: Pushed 
+0df3b103c22d: Pushed 
+6b9e5d3233bc: Pushed 
+6646fc4c3eca: Pushed 
+50cc338b5fb5: Pushed 
+d4bf226944ba: Pushed 
+5ff0afde3743: Pushed 
+3973e2de72ae: Pushed 
+724e9db35fe0: Pushed 
+6650225473f3: Pushed 
+latest: digest: sha256:30ccb30d1c1e9c556060d95ac55f0bac02d3a97239fc0d95dca543fa79353afb size: 7813
+Samals-MacBook-Pro:~ dimdung$ 
